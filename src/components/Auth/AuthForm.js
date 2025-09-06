@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
-
+import { useState, useRef, useContext } from 'react';
+import { AuthContext } from '../Context/AuthContext';
 import classes from './AuthForm.module.css';
 
 const AuthForm = () => {
+	const [setToken] = useContext(AuthContext);
 	const [isLogin, setIsLogin] = useState(true);
 	const [loading, setIsLoading] = useState(false);
 	const emailInputRef = useRef();
@@ -12,25 +13,42 @@ const AuthForm = () => {
 	};
 
 	function submitLoginForm(event) {
-		event.preventDefault()
-		// setIsLoading(true);
+		event.preventDefault();
+		setIsLoading(true);
 		const enteredEmail = emailInputRef.current.value;
 		const enteredPassword = passwordInputRef.current.value;
+		let url;
 		if (isLogin) {
-
+			url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC-EjncbSDwCk-isi9RtO3COCiSSO2mVVA";
 		}else {
-			fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyC-EjncbSDwCk-isi9RtO3COCiSSO2mVVA", {
-				method: "POST",
-				body: JSON.stringify({
-					email: enteredEmail,
-					password: enteredPassword,
-					returnSecureToken:true
-				}),
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			})
+			url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC-EjncbSDwCk-isi9RtO3COCiSSO2mVVA";
 		}
+		fetch(url, {
+			method:"POST",
+			body:JSON.stringify({
+				email: enteredEmail,
+				password: enteredPassword,
+				returnSecureToken:true
+			})
+		}).then((res) => {
+			if (res.ok) {
+				return res.json()
+			}else {
+				// return res.json().then((data) => {
+				// 	if (data.error.message) {
+				// 		setIsLoading(false);
+				// 		alert(data.error.message);
+				// 	}
+				// })
+				throw new Error("Authentication failed!")
+			}
+		}).then((data) => {
+			setIsLoading(false);
+			setToken(data.idToken);
+		}).catch((error) => {
+			alert(error)
+		})
+		
 	}
 
 	return (
@@ -52,6 +70,12 @@ const AuthForm = () => {
 				</div>
 				<div className={classes.actions}>
 					{loading ? <p>Sending request...</p> :
+					<>
+						<button
+							type='submit'
+						>
+							{isLogin ? 'Login' : 'Register'}
+						</button>
 						<button
 							type='button'
 							className={classes.toggle}
@@ -59,6 +83,7 @@ const AuthForm = () => {
 						>
 							{isLogin ? 'Create new account' : 'Login with existing account'}
 						</button>
+					</>
 					}
 				</div>
 			</form>
