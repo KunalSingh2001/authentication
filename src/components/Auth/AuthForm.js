@@ -3,7 +3,7 @@ import { AuthContext } from '../Context/AuthContext';
 import classes from './AuthForm.module.css';
 
 const AuthForm = () => {
-	const [setToken] = useContext(AuthContext);
+	const {setToken} = useContext(AuthContext);
 	const [isLogin, setIsLogin] = useState(true);
 	const [loading, setIsLoading] = useState(false);
 	const emailInputRef = useRef();
@@ -34,18 +34,13 @@ const AuthForm = () => {
 			if (res.ok) {
 				return res.json()
 			}else {
-				// return res.json().then((data) => {
-				// 	if (data.error.message) {
-				// 		setIsLoading(false);
-				// 		alert(data.error.message);
-				// 	}
-				// })
 				throw new Error("Authentication failed!")
 			}
 		}).then((data) => {
 			setIsLoading(false);
 			setToken(data.idToken);
 		}).catch((error) => {
+			setIsLoading(false);
 			alert(error)
 		})
 		
