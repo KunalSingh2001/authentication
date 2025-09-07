@@ -1,10 +1,18 @@
 import React, {useContext} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+
 import { AuthContext } from '../Context/AuthContext';
 import classes from './MainNavigation.module.css';
 
 const MainNavigation = () => {
-  const {token} = useContext(AuthContext);
+  const {token, setToken} = useContext(AuthContext);
+  const history = useHistory()
+  function Logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('isLoggedIn');
+    setToken(null);
+    history.replace('/auth');
+  }
 
   return (
     <header className={classes.header}>
@@ -20,7 +28,7 @@ const MainNavigation = () => {
                 <Link to='/profile'>Profile</Link>
               </li>
               <li>
-                <button>Logout</button>
+                <button onClick={Logout}>Logout</button>
               </li>
             </>
           ):

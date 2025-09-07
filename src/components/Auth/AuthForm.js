@@ -1,9 +1,10 @@
 import { useState, useRef, useContext } from 'react';
 import { AuthContext } from '../Context/AuthContext';
 import classes from './AuthForm.module.css';
-
+import { useHistory } from 'react-router-dom';
 const AuthForm = () => {
 	const {setToken} = useContext(AuthContext);
+	const history = useHistory();
 	const [isLogin, setIsLogin] = useState(true);
 	const [loading, setIsLoading] = useState(false);
 	const emailInputRef = useRef();
@@ -39,6 +40,9 @@ const AuthForm = () => {
 		}).then((data) => {
 			setIsLoading(false);
 			setToken(data.idToken);
+			localStorage.setItem("token", data.idToken);
+			localStorage.setItem("isLoggedIn", "true");
+			history.replace('/');
 		}).catch((error) => {
 			setIsLoading(false);
 			alert(error)
