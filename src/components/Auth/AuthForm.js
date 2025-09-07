@@ -3,7 +3,7 @@ import { AuthContext } from '../Context/AuthContext';
 import classes from './AuthForm.module.css';
 import { useHistory } from 'react-router-dom';
 const AuthForm = () => {
-	const {setToken} = useContext(AuthContext);
+	const {setToken, setLogInTime, setExpiryTime} = useContext(AuthContext);
 	const history = useHistory();
 	const [isLogin, setIsLogin] = useState(true);
 	const [loading, setIsLoading] = useState(false);
@@ -42,6 +42,11 @@ const AuthForm = () => {
 			setToken(data.idToken);
 			localStorage.setItem("token", data.idToken);
 			localStorage.setItem("isLoggedIn", "true");
+			const now = Date.now();
+			const expiry = now + 5 * 60 * 1000;
+			setLogInTime(now);
+			setExpiryTime(expiry);
+			localStorage.setItem("expiryTime", expiry); 
 			history.replace('/');
 		}).catch((error) => {
 			setIsLoading(false);

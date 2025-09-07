@@ -5,12 +5,10 @@ import { AuthContext } from '../Context/AuthContext';
 import classes from './MainNavigation.module.css';
 
 const MainNavigation = () => {
-  const {token, setToken} = useContext(AuthContext);
+  const {token, setToken, TimerLogOut} = useContext(AuthContext);
   const history = useHistory()
   function Logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isLoggedIn');
-    setToken(null);
+    TimerLogOut();
     history.replace('/auth');
   }
 
